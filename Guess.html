@@ -109,6 +109,10 @@
                     window.cc = 0 ;
                     console.log(window.cc) ;
                 }
+                if (_this.value == 'Resume') {
+                    window.cc = 3 ;
+                    console.log(window.cc) ;
+                }
             }
 
             function changetext(_this) {
@@ -121,6 +125,9 @@
                 }
                 if (window.cc == 2) {
                     _this.style.backgroundColor = 'red' ;
+                }
+                if (window.cc == 3) {
+                    _this.style.backgroundColor = 'beige' ;
                 }
                 
             }
@@ -162,6 +169,7 @@
                 border: 0 none ;
                 width: 100px ;
                 height: 100px ;
+                background-color: beige ;
             }
             button:active{
                 margin: 10px ;
@@ -222,6 +230,7 @@
             <input type="button" value='Blue' onclick="camp(this)">
             <input type="button" value='Red' onclick="camp(this)">
             <input type="button" value='Neutral' onclick="camp(this)">
+            <input type="button" value='Resume' onclick="camp(this)">
         </div>
     </body>
 </html>
