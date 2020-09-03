@@ -56,7 +56,7 @@ a:hover
 .container
 {
 	margin: 0px auto;
-	width: 1200px;
+	width: 1500px;
 }
 
 /*********************************************************************************/
@@ -844,7 +844,6 @@ ul.contact li a.icon-rss:before
 	padding: 7em 0em;
 	color: rgba(255,255,255,0.5);
 }
-
 
 #footer .title h2
 {
