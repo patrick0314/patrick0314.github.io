@@ -1,39 +1,19 @@
+<!DOCTYPE html>
 <html>
     <head>
-        <title>首頁</title>
-
-        <style>
-            input[type='button']{
-                margin: 100px 100px;
-                padding: 100px 100px ;
-                background-color: #ccc;
-                border: 0 none;
-                cursor:pointer;
-                -webkit-border-radius: 15px;
-                border-radius: 15px;
-                text-align: center;
-            }
-
-            h1 {
-                margin: 30px 30px;
-                padding: 30px 30px ;
-                border: 0 none;
-                text-align: center;
-            }
-
-            div {
-                margin: 30px 30px;
-                padding: 30px 30px ;
-                border: 0 none;
-                text-align: center;
-            }
-        </style>
+        <title> Code Name </title>
+        <link rel="stylesheet" href="styles.css">
     </head>
+
     <body>
-        <h1>Codenames</h1>
-        <div>
-            <input type="button" id='guess' value="Guess" onclick="location.href='Guess.html'">
-            <input type="button" id='answer' value="Answer" onclick="location.href='Answer.html'">
+        <div class="container">
+            <div class="cover">
+                <h1> Code Name </h1>
+                <img src="game_cover.jpg" alt="game cover">
+            </div>
+            
+            <button onclick="startGame()"> START </button>
+            <script src="script.js"></script>
         </div>
     </body>
 </html>
