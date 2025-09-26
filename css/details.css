@@ -120,6 +120,48 @@
     white-space: pre-wrap; /* 保留文字中的換行 */
 }
 
+/* --- Back to List Button Styles (with Text) --- */
+.back-to-list-button {
+    position: absolute;
+    top: 235px;
+    left: 80px;
+    z-index: 999;
+    
+    /* 使用 Flexbox 讓三角形和文字並排 */
+    display: flex;
+    align-items: center;
+    gap: 8px; /* 三角形和文字之間的間距 */
+    
+    color: rgba(255, 255, 255, 0.7); /* 設定文字顏色 */
+    font-size: 1.1em;
+    font-weight: bold;
+    text-decoration: none;
+    
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-to-list-button:hover {
+    color: rgba(255, 255, 255, 1); /* 滑鼠懸停時文字變不透明 */
+    transform: scale(1.1);
+}
+
+/* .triangle 用來專門繪製三角形 */
+.back-to-list-button .triangle {
+    width: 0;
+    height: 0;
+    
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 15px solid rgba(255, 255, 255, 0.7);
+    
+    transition: border-color 0.3s ease; /* 讓顏色過渡更平滑 */
+}
+
+.back-to-list-button:hover .triangle {
+    border-right-color: rgba(255, 255, 255, 1); /* 滑鼠懸停時三角形也變不透明 */
+}
+
 /* 手機版響應式設計 */
 @media (max-width: 768px) {
     .main-info-grid {
