@@ -1,0 +1,104 @@
+/* --- Scripts Page Styles --- */
+.page-title {
+    text-align: center;
+    font-size: 2.5em;
+    color: rgb(255, 204, 77);
+    margin: 40px 0;
+}
+
+.scripts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    padding: 0 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.script-card {
+    background-color: rgb(60, 60, 60);
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 使用偽元素在卡片上繪製三角形和文字 */
+.script-card .played-ribbon {
+    /* 這個容器本身是透明的，只作為定位和旋轉的基準 */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 80px;  /* 三角形的尺寸 */
+    height: 80px; /* 三角形的尺寸 */
+    pointer-events: none; /* 讓滑鼠可以穿透 */
+}
+
+.script-card .played-ribbon::before {
+    content: ''; /* 繪製三角形背景 */
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 40px solid transparent;
+    border-top-color: #e67e22;  /* 三角形顏色 */
+    border-left-color: #e67e22; /* 三角形顏色 */
+}
+
+.script-card .played-ribbon::after {
+    content: '已玩過'; /* 顯示文字 */
+    position: absolute;
+    top: 18px;  /* 文字的垂直位置 */
+    left: -24px; /* 文字的水平位置 */
+    display: block;
+    width: 100px; /* 文字容器的寬度 */
+    
+    color: white;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-align: center;
+    
+    transform: rotate(-45deg); /* 將文字旋轉 -45 度以匹配斜邊 */
+}
+
+.script-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.6);
+}
+
+.script-card img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    display: block;
+}
+
+.card-content {
+    padding: 20px;
+}
+
+.card-content h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.5em;
+    color: #eee;
+}
+
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.card-tags span {
+    background-color: rgb(75, 125, 180);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.9em;
+}
+
+/* --- Card Link Wrapper Style --- */
+a.card-link {
+    text-decoration: none; /* 移除底線 */
+    color: inherit; /* 繼承文字顏色 */
+}

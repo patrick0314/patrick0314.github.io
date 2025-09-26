@@ -1,0 +1,8 @@
+/* --- Global Base Styles --- */
+/* This block sets the default styles for the entire webpage. */
+body {
+    font-family: 'Helvetica Neue', Arial, '微軟正黑體',sans-serif; /* Sets the default fonts for the page. */
+    background-color: rgb(75, 75, 75); /* Sets a dark gray background color. */
+    color: rgb(255, 255, 255); /* Sets the default text color to white. */
+    line-height: 2.0; /* Sets the space between lines of text. */
+}

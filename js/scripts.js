@@ -1,0 +1,71 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.querySelector('.scripts-container');
+    const filterTitle = document.querySelector('#filter-title');
+
+    // 1. 獲取 URL 中的所有篩選參數
+    const params = new URLSearchParams(window.location.search);
+    const activeFilters = {
+        players: params.get('players'),
+        dm: params.get('dm'),
+        genre: params.get('genre'),
+        type: params.get('type')
+    };
+
+    // 2. 根據篩選條件過濾劇本資料
+    //    只有當 URL 中有參數時，才進行過濾
+    const hasFilters = Array.from(params.keys()).length > 0;
+    const filteredScripts = hasFilters ? scriptsData.filter(script => {
+        // 檢查每個條件，如果 URL 中沒有該參數，則視為符合條件
+        const playersMatch = !activeFilters.players || script.players.toString() === activeFilters.players;
+        const dmMatch = !activeFilters.dm || script.dm === activeFilters.dm;
+        const genreMatch = !activeFilters.genre || script.genre === activeFilters.genre;
+        // 對於 type，檢查陣列中是否包含指定的類型
+        const typeMatch = !activeFilters.type || script.type.includes(activeFilters.type);
+
+        return playersMatch && dmMatch && genreMatch && typeMatch;
+    }) : scriptsData; // 如果沒有任何篩選參數，則顯示全部劇本
+
+    // 3. 更新頁面標題
+    if (hasFilters) {
+        filterTitle.textContent = `劇本`;
+    } else {
+        filterTitle.textContent = '全部劇本';
+    }
+    
+    // 4. 將最終結果渲染到頁面上
+    renderCards(filteredScripts);
+
+});
+
+// 將卡片渲染的邏輯獨立成一個函數
+function renderCards(scripts) {
+    const container = document.querySelector('.scripts-container');
+    container.innerHTML = ''; // 清空現有內容
+
+    if (scripts.length === 0) {
+        return;
+    }
+
+    scripts.forEach(script => {
+        const typeTags = script.type.map(t => `<span>${t}</span>`).join('');
+        const cardHTML = `
+            <a href="details.html?id=${script.id}" class="card-link">
+                <div class="script-card">
+                    ${script.date ? '<div class="played-ribbon">已玩過</div>' : ''}
+                    
+                    <img src="${script.image}" alt="${script.title}">
+                    <div class="card-content">
+                        <h3>${script.title}</h3>
+                        <div class="card-tags">
+                            <span>${script.players} 人</span>
+                            <span>${script.dm}</span>
+                            <span>${script.genre}</span>
+                            ${typeTags}
+                        </div>
+                    </div>
+                </div>
+            </a>
+        `;
+        container.innerHTML += cardHTML;
+    });
+}

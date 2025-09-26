@@ -1,0 +1,111 @@
+/* --- Details Page Styles --- */
+
+/* 通用詳情卡片樣式 */
+.details-card {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 40px;
+    background-color: rgb(60, 60, 60);
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* 第一張卡片：主要資訊 */
+.main-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 40px;
+    align-items: start;
+}
+
+#script-image {
+    width: 100%;
+    border-radius: 10px;
+}
+
+#script-title {
+    text-align: left;
+    font-size: 3em;
+    color: rgb(255, 204, 77);
+    margin: 0 0 20px 0;
+}
+
+#script-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+#script-tags span {
+    background-color: rgb(75, 125, 180);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 1em;
+}
+
+/* 【新增】評分區塊樣式 */
+.rating-section {
+    margin-top: 20px;
+}
+
+.rating-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    white-space: nowrap; /* 防止內部元素換行 */
+}
+
+.rating-label {
+    width: 100px; /* 固定標籤寬度，使其對齊 */
+}
+
+.rating-stars {
+    display: flex;
+    gap: 4px;
+}
+
+.star-icon {
+    width: 24px;
+    height: 24px;
+    fill: rgb(220, 150, 70); /* 將星星顏色改為低鮮明度的橘色 */
+}
+
+/* 第二卡片：官方介紹 */
+.details-card-description h2 {
+    font-size: 2em;
+    color: rgb(255, 204, 77);
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.details-card-description p {
+    font-size: 1.2em;
+    line-height: 2.2;
+    text-align: center;
+    white-space: pre-wrap; /* 保留文字中的換行 */
+}
+
+/* 第三張卡片：遊玩心得 */
+.details-card-experience h2 {
+    font-size: 2em;
+    color: rgb(255, 204, 77);
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.details-card-experience p {
+    font-size: 1.2em;
+    line-height: 2.2;
+    text-align: justify;
+    white-space: pre-wrap; /* 保留文字中的換行 */
+}
+
+/* 手機版響應式設計 */
+@media (max-width: 768px) {
+    .main-info-grid {
+        grid-template-columns: 1fr; /* 改為單欄佈局 */
+    }
+}

@@ -1,0 +1,65 @@
+/* --- Dropdown Menu Styles --- */
+
+/* 1. 基礎設定：讓下拉選單的定位點在「人數」按鈕上 */
+.dropdown-container {
+    position: relative; /* 關鍵！讓子選單的 absolute 定位以此為基準 */
+}
+
+/* 2. 所有下拉選單的通用樣式 */
+.dropdown-menu {
+    display: block;
+    gap: 0;
+
+    list-style: none; /* 移除項目符號 */
+    padding: 5px 0; /* 上下內邊距 */
+    margin: 0px;
+    background-color: rgb(75, 125, 180); /* 藍色背景 */
+    border-radius: 8px; /* 圓角 */
+    box-shadow: 0 -2px 4px rgba(0,0,0,0.5); /* 更深的陰影 */
+    position: absolute; /* 絕對定位，脫離文檔流 */
+    min-width: 100px; /* 最小寬度 */
+    z-index: 100; /* 確保選單在最上層 */
+
+    /* 預設隱藏，並準備好淡入動畫 */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+/* 3. 第一層選單的位置 */
+.dropdown-menu.level-1 {
+    top: 100%; /* 放在主按鈕下方，留一點點空隙 */
+    margin-top: 10px; /* 改用 margin 來控制與主按鈕的垂直距離 */
+    left: 50%;
+    transform: translateX(-50%); /* 水平置中對齊主按鈕 */
+}
+
+/* 4. 第二層選單的位置 */
+.dropdown-menu.level-2 {
+    top: 0px; /* 向上移動一點，讓外觀更連續 */
+    left: 100%; /* 放在第一層選單的右邊 */
+    margin-left: 0px; /* 和第一層選單之間留點空隙 */
+}
+
+/* 5. 當選單被 JavaScript 設為可見時的樣式 */
+.dropdown-menu.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 6. 選單內的選項樣式 */
+.dropdown-menu li a {
+    display: block; /* 讓整個區域都可點擊 */
+    padding: 5px 5px;
+    margin-top: 0px;
+    color: rgb(238, 238, 238);
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-menu li a:hover {
+    background-color: rgb(255, 255, 255); /* 滑鼠懸停時變色 */
+    color: rgb(75, 125, 180);
+}
