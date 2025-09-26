@@ -31,6 +31,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     <span>${script.dm}</span>
                     <span>${script.genre}</span>
                     ${script.type.map(t => `<span>${t}</span>`).join('')}
+                    ${script.date ? `
+                        <span class="played-date-tag">
+                            <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z"/></svg>
+                            ${script.date} done
+                        </span>
+                    ` : ''}
                 </div>
                 <div class="rating-section">
                     ${generateRatingItem('綜合評分：', script.rating.total)}
@@ -67,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
         errorMessage.style.display = 'block';
     }
 
-    // 【新增】根據評分生成星星 SVG 的函數
+    // 根據評分生成星星 SVG 的函數
     function generateRatingItem(label, score) {
         let starsHTML = '';
         const fullStars = Math.floor(score);
@@ -78,11 +84,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (halfStar) starsHTML += getStarSVG('half');
         for (let i = 0; i < emptyStars; i++) starsHTML += getStarSVG('empty');
         
+        // 不再用 .rating-item 包裝，直接返回兩個元素
         return `
-            <div class="rating-item">
-                <span class="rating-label">${label}</span>
-                <div class="rating-stars">${starsHTML}</div>
-            </div>
+            <span class="rating-label">${label}</span>
+            <div class="rating-stars">${starsHTML}</div>
         `;
     }
 

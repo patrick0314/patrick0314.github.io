@@ -45,21 +45,38 @@
     font-size: 1em;
 }
 
-/* 【新增】評分區塊樣式 */
-.rating-section {
-    margin-top: 20px;
+/* --- Played Date Tag Styles --- */
+#script-tags .played-date-tag {
+    background-color: rgb(230, 126, 34); /* 使用一個不同的顏色，例如綠色 */
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 1em;
+    
+    /* 使用 Flexbox 讓圖示和文字對齊 */
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.rating-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-    font-size: 1.2em;
-    white-space: nowrap; /* 防止內部元素換行 */
+.played-date-tag svg {
+    width: 18px;
+    height: 18px;
+    fill: #fff;
+}
+
+/* --- 評分區塊樣式 (使用 Grid 佈局修正) --- */
+.rating-section {
+    margin-top: 20px;
+    display: grid; /* 將容器設為 Grid 佈局 */
+    grid-template-columns: max-content auto; /* 核心：定義兩欄 */
+    gap: 10px 15px; /* 定義行列間距 */
+    align-items: center; /* 讓兩欄的內容垂直置中對齊 */
 }
 
 .rating-label {
-    width: 100px; /* 固定標籤寬度，使其對齊 */
+    font-size: 1.2em;
+    white-space: nowrap; /* 確保標籤文字本身不換行 */
 }
 
 .rating-stars {
@@ -70,7 +87,7 @@
 .star-icon {
     width: 24px;
     height: 24px;
-    fill: rgb(220, 150, 70); /* 將星星顏色改為低鮮明度的橘色 */
+    fill: rgb(220, 150, 70);
 }
 
 /* 第二卡片：官方介紹 */
