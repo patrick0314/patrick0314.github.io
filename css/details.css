@@ -90,7 +90,7 @@
     fill: rgb(220, 150, 70);
 }
 
-/* 第二卡片：官方介紹 */
+/* 第二張卡片：官方介紹 */
 .details-card-description h2 {
     font-size: 2em;
     color: rgb(255, 204, 77);
@@ -105,7 +105,49 @@
     white-space: pre-wrap; /* 保留文字中的換行 */
 }
 
-/* 第三張卡片：遊玩心得 */
+/* 第三張卡片：角色介紹 */
+.details-card-roles h2 {
+    font-size: 2em;
+    color: rgb(255, 204, 77);
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.roles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 關鍵：建立一個三欄等寬的網格 */
+    gap: 20px; /* 儲存格之間的間距 */
+}
+
+.role-cell {
+    background-color: rgba(0, 0, 0, 0.2); /* 為每個儲存格加上淡淡的背景色 */
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.role-name {
+    font-size: 1.3em;
+    color: #eee;
+    margin: 0 0 10px 0;
+}
+
+.role-intro {
+    font-size: 1em;
+    line-height: 1.8;
+    color: #ccc;
+    text-align: center;
+    margin: 0;
+}
+
+/* 在手機版上，我們將三欄改為單欄，避免內容擠在一起 */
+@media (max-width: 768px) {
+    .roles-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 第四張卡片：遊玩心得 */
 .details-card-experience h2 {
     font-size: 2em;
     color: rgb(255, 204, 77);

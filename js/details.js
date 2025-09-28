@@ -55,6 +55,28 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     `;
 
+    // 卡片：角色簡介
+    let rolesCard = '';
+    // 檢查 role 物件是否存在且不為空
+    if (script.role && Object.keys(script.role).length > 0) {
+        // 使用 Object.entries 來遍歷角色名稱和介紹
+        const rolesHTML = Object.entries(script.role).map(([name, intro]) => `
+            <div class="role-cell">
+                <h4 class="role-name">${name}</h4>
+                <p class="role-intro">${intro || '<i>暫無簡介</i>'}</p>
+            </div>
+        `).join('');
+
+        rolesCard = `
+            <div class="details-card details-card-roles">
+                <h2>角色簡介</h2>
+                <div class="roles-grid">
+                    ${rolesHTML}
+                </div>
+            </div>
+        `;
+    }
+
     // 卡片：遊玩心得
     const experienceCard = `
         <div class="details-card details-card-experience">
@@ -64,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
 
     // --- 3. 將所有卡片插入頁面 ---
-    mainContent.innerHTML = mainInfoCard + descriptionCard + experienceCard;
+    mainContent.innerHTML = mainInfoCard + descriptionCard + rolesCard + experienceCard;
 
     // --- 輔助函數 ---
 
