@@ -77,6 +77,33 @@ function initializeTocScroll() {
     });
 }
 
+// 初始化「回到頂部」按鈕的函數
+function initializeBackToTop() {
+    const backToTopButton = document.getElementById('back-to-top-btn');
+
+    if (backToTopButton) {
+        // 監聽頁面滾動事件
+        window.onscroll = function() {
+            // 當使用者向下滑動超過 300px 時，顯示按鈕
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                backToTopButton.classList.add('show');
+            } else {
+                backToTopButton.classList.remove('show');
+            }
+        };
+
+        // 監聽按鈕點擊事件
+        backToTopButton.addEventListener('click', function(event) {
+            event.preventDefault(); // 防止連結的預設跳轉行為
+            // 平滑滾動到頁面頂部
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+}
+
 // --- 頁面載入時的執行順序 ---
 document.addEventListener('DOMContentLoaded', async function() {
     // 1. 載入共用元件 (Header/Footer)
@@ -87,4 +114,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (document.querySelector('.toc-nav')) {
         initializeTocScroll();
     }
+
+    // 3. 【新增】初始化「回到頂部」按鈕功能
+    initializeBackToTop();
 });

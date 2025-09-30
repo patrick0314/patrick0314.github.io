@@ -38,40 +38,8 @@
 
 
 /* --- 人數介紹區塊 --- */
-.player-count-section {
-    /* 直接繼承 .content-box 的樣式 */
-}
-
-.player-count-section h3 {
-    font-size: 1.4em;
-    color: #eee;
-    margin-top: 30px;
-    margin-bottom: 15px;
-    border-left: 4px solid rgb(75, 125, 180); /* 左側加上裝飾線，顏色同 header */
-    padding-left: 10px; /* 讓文字和線之間有點距離 */
-}
-
-
-/* --- 流派介紹區塊 --- */
-.genre-section {
-    /* 直接繼承 .content-box 的樣式 */
-}
-
-.genre-section h3 {
-    font-size: 1.4em;
-    color: #eee;
-    margin-top: 30px;
-    margin-bottom: 15px;
-    border-left: 4px solid rgb(75, 125, 180); /* 左側加上裝飾線，顏色同 header */
-    padding-left: 10px; /* 讓文字和線之間有點距離 */
-}
-
-
-/* --- 類型介紹區塊 --- */
-.type-section {
-    /* 直接繼承 .content-box 的樣式 */
-}
-
+.player-count-section h3,
+.genre-section h3,
 .type-section h3 {
     font-size: 1.4em;
     color: #eee;
