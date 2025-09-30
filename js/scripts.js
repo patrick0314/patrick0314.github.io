@@ -8,7 +8,8 @@ document.addEventListener('DOMContentLoaded', function() {
         players: params.get('players'),
         dm: params.get('dm'),
         genre: params.get('genre'),
-        type: params.get('type')
+        type: params.get('type'),
+        done: params.get('done'),
     };
 
     // 2. 根據篩選條件過濾劇本資料
@@ -19,10 +20,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const playersMatch = !activeFilters.players || script.players.toString() === activeFilters.players;
         const dmMatch = !activeFilters.dm || script.dm === activeFilters.dm;
         const genreMatch = !activeFilters.genre || script.genre === activeFilters.genre;
+        const doneMatch = !activeFilters.done || script.done.toString() === activeFilters.done;
         // 對於 type，檢查陣列中是否包含指定的類型
         const typeMatch = !activeFilters.type || script.type.includes(activeFilters.type);
 
-        return playersMatch && dmMatch && genreMatch && typeMatch;
+        return playersMatch && dmMatch && genreMatch && doneMatch && typeMatch;
     }) : scriptsData; // 如果沒有任何篩選參數，則顯示全部劇本
 
     // 3. 更新頁面標題

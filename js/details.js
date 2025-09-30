@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     const mainContent = document.getElementById('details-main-content');
     const errorMessage = document.getElementById('error-message');
 
@@ -78,15 +78,28 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 卡片：遊玩心得
-    const experienceCard = `
+    let experienceCard = '';
+    const experienceContent = script.experience && Object.keys(script.experience).length > 0
+        ? Object.entries(script.experience).map(([reviewer, text]) => `
+            <div class="experience-item">
+                <h4 class="experience-reviewer">${reviewer}：</h4>
+                <p class="experience-text">${text}</p>
+            </div>
+        `).join('')
+        : '<p><i>暫無遊玩心得</i></p>'; // 如果沒有心得，顯示預設文字
+
+    experienceCard = `
         <div class="details-card details-card-experience">
             <h2>遊玩心得</h2>
-            <p>${script.experience}</p>
+            ${experienceContent}
         </div>
     `;
 
     // --- 3. 將所有卡片插入頁面 ---
     mainContent.innerHTML = mainInfoCard + descriptionCard + rolesCard + experienceCard;
+
+    // --- 初始化圖片燈箱的功能 ---
+    initializeImageModal();
 
     // --- 輔助函數 ---
 
@@ -100,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let starsHTML = '';
         const fullStars = Math.floor(score);
         const halfStar = score % 1 >= 0.5 ? 1 : 0;
-        const emptyStars = 5 - fullStars - halfStar;
+        const emptyStars = 10 - fullStars - halfStar;
 
         for (let i = 0; i < fullStars; i++) starsHTML += getStarSVG('full');
         if (halfStar) starsHTML += getStarSVG('half');
@@ -121,5 +134,37 @@ document.addEventListener('DOMContentLoaded', function() {
             empty: '<path d="M19.65 9.04l-4.84-.42-1.89-4.45c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.73 3.67-3.18c.67-.58.32-1.68-.56-1.75zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"/>'
         };
         return `<svg class="star-icon" viewBox="0 0 24 24">${paths[type]}</svg>`;
+    }
+
+    function initializeImageModal() {
+        const modal = document.getElementById("image-modal");
+        const modalImg = document.getElementById("enlarged-img");
+        const scriptImg = document.getElementById("script-image");
+        const closeBtn = document.querySelector(".close-button");
+
+        // 當劇本圖片存在時，才加上點擊事件
+        if (scriptImg) {
+            scriptImg.onclick = function() {
+                modal.style.display = "block";
+                modalImg.src = this.src;
+            }
+        }
+
+        // 點擊關閉按鈕時，隱藏燈箱
+        if (closeBtn) {
+            closeBtn.onclick = function() {
+                modal.style.display = "none";
+            }
+        }
+
+        // 點擊燈箱背景時，也隱藏燈箱
+        if (modal) {
+            modal.onclick = function(event) {
+                // 確保點擊的是背景而不是圖片本身
+                if (event.target === modal) {
+                    modal.style.display = "none";
+                }
+            }
+        }
     }
 });

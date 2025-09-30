@@ -100,7 +100,7 @@
 
 .details-card-description p {
     font-size: 1.2em;
-    line-height: 2.2;
+    line-height: 3;
     text-align: center;
     white-space: pre-wrap; /* 保留文字中的換行 */
 }
@@ -155,11 +155,31 @@
     margin-bottom: 25px;
 }
 
-.details-card-experience p {
+/* 單個心得項目的容器 */
+.details-card-experience .experience-item {
+    margin-bottom: 25px; /* 每個心得之間的間距 */
+}
+
+/* 署名 (reviewer) 的標題樣式 */
+.details-card-experience .experience-reviewer {
+    font-size: 1.3em;
+    color: rgb(255, 204, 77);
+    margin: 0 0 10px 0;
+}
+
+/* 將 p 標籤的樣式指定給 .experience-text */
+.details-card-experience .experience-text {
     font-size: 1.2em;
-    line-height: 2.2;
-    text-align: justify;
-    white-space: pre-wrap; /* 保留文字中的換行 */
+    line-height: 3;
+    text-align: left;
+    white-space: pre-wrap;
+    text-indent: 2em; /* 段落開頭縮排 */
+    margin: 0; /* 移除預設的 p 標籤邊距 */
+}
+
+/* 如果是預設文字，讓它置中且為斜體 */
+.details-card-experience p {
+    text-align: center;
 }
 
 /* --- Back to List Button Styles (with Text) --- */
@@ -202,6 +222,59 @@
 
 .back-to-list-button:hover .triangle {
     border-right-color: rgba(255, 255, 255, 1); /* 滑鼠懸停時三角形也變不透明 */
+}
+
+/* --- Image Modal (Lightbox) Styles --- */
+/* 燈箱背景 */
+.modal-overlay {
+    display: none; /* 預設隱藏 */
+    position: fixed; /* 固定定位，覆蓋整個視窗 */
+    z-index: 1001; /* 確保在最上層 */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* 如果圖片太大，允許滾動 */
+    background-color: rgba(0, 0, 0, 0.9); /* 黑色半透明背景 */
+    cursor: pointer; /* 讓使用者知道可以點擊背景關閉 */
+}
+
+/* 放大的圖片內容 */
+.modal-content {
+    margin: auto;
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 80%;
+    max-height: 85vh; /* 最大高度為視窗高度的 85% */
+    cursor: default; /* 圖片本身恢復預設鼠標 */
+    animation: zoomIn 0.3s ease; /* 加入簡單的放大動畫 */
+}
+
+/* 關閉按鈕 */
+.close-button {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #bbb;
+    text-decoration: none;
+}
+
+/* 放大動畫 */
+@keyframes zoomIn {
+    from {transform: translate(-50%, -50%) scale(0.5);}
+    to {transform: translate(-50%, -50%) scale(1);}
 }
 
 /* 手機版響應式設計 */
