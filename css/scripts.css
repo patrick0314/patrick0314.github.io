@@ -102,3 +102,34 @@ a.card-link {
     text-decoration: none; /* 移除底線 */
     color: inherit; /* 繼承文字顏色 */
 }
+
+/* --- No Results Styles --- */
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 10px 10px; /* 【修改】減少上下的間隔 */
+    color: #ccc;
+}
+
+.no-results p {
+    font-size: 1em; /* 【修改】縮小文字尺寸 */
+    margin-bottom: 5px;
+}
+
+.clear-filter-btn {
+    display: inline-block;
+    background-color: rgb(255, 204, 77);
+    color: rgb(60, 60, 60);
+    padding: 12px 25px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.clear-filter-btn:hover {
+    background-color: rgb(255, 220, 120);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}

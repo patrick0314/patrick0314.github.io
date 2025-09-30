@@ -48,7 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (titleParts.length > 0) {
             filterTitle.textContent = titleParts.join(' & ');
         } else {
-            // 如果篩選參數是 done=1 這類我們忽略的，就顯示通用標題
             filterTitle.textContent = '劇本';
         }
 
@@ -67,6 +66,11 @@ function renderCards(scripts) {
     container.innerHTML = ''; // 清空現有內容
 
     if (scripts.length === 0) {
+        container.innerHTML = `
+            <div class="no-results">
+                <p>找不到符合條件的劇本。</p>
+            </div>
+        `;
         return;
     }
 
@@ -77,7 +81,7 @@ function renderCards(scripts) {
                 <div class="script-card">
                     ${script.date ? '<div class="played-ribbon">已玩過</div>' : ''}
                     
-                    <img src="${script.image}" alt="${script.title}">
+                    <img src="${script.image}" alt="${script.title}" loading="lazy">
                     <div class="card-content">
                         <h3>${script.title}</h3>
                         <div class="card-tags">
