@@ -29,7 +29,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 3. 更新頁面標題
     if (hasFilters) {
-        filterTitle.textContent = `劇本`;
+        const titleParts = [];
+        params.forEach((value, key) => {
+            // 我們只將主要的篩選條件放入標題，可以自行增減
+            if (key === 'players') {
+                titleParts.push(`${value}人本`); // 特別處理人數，加上 "人本"
+            } else if (key === 'type' || key === 'genre' || key === 'dm') {
+                titleParts.push(value);
+            } else if (key === 'done') {
+                if (value === '0') {
+                    titleParts.push(`未遊玩劇本`);
+                } else if (value === '1') {
+                    titleParts.push(`已遊玩劇本`);
+                }
+            }
+        });
+
+        if (titleParts.length > 0) {
+            filterTitle.textContent = titleParts.join(' & ');
+        } else {
+            // 如果篩選參數是 done=1 這類我們忽略的，就顯示通用標題
+            filterTitle.textContent = '劇本';
+        }
+
     } else {
         filterTitle.textContent = '全部劇本';
     }
