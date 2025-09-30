@@ -40,3 +40,10 @@
     background-color: rgb(255, 204, 77); /* 使用標題的黃色作為 hover 效果 */
     color: rgb(60, 60, 60); /* 滑鼠懸停時文字變深色 */
 }
+
+/* --- 響應式設計：在手機等小螢幕上隱藏 TOC --- */
+@media (max-width: 768px) {
+    .toc-nav {
+        display: none;
+    }
+}
