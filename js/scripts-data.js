@@ -12,9 +12,9 @@ const scriptsData = [
         done: 1,
         date: "2025.09.21",
         rating: {
-            total: 3,
-            difficulty: 2,
-            story: 3,
+            total: 6,
+            difficulty: 4,
+            story: 5,
         },
         description: "3 份案宗，3 起懸案，開啟塵封 10 年的血色回憶",
         role: {
@@ -99,9 +99,9 @@ const scriptsData = [
         done: 1,
         date: "2025.08.23",
         rating: {
-            total: 4,
-            difficulty: 4,
-            story: 4,
+            total: 8,
+            difficulty: 6,
+            story: 7,
         },
         description: "故事發生在1927年的舊金山唐人街。近幾年間，常有唐人街上的各路人士離奇失踪，警方破案不力，毫無頭緒。\n而在這一年深秋，此地更為密集地發生了一系列血腥事件，似乎都圍繞著唐人街中央的盛昌公寓.....",
         role: {
@@ -131,9 +131,9 @@ const scriptsData = [
         done: 1,
         date: "2025.09.20",
         rating: {
-            total: 3,
-            difficulty: 3,
-            story: 2,
+            total: 5,
+            difficulty: 4,
+            story: 4,
         },
         description: "混沌的地下世界聚集著不容於世的妖魔鬼怪，黑女巫在地下世界最大的城堡厄舍府設宴\n迎來了狼人、白蛇、吸血鬼等七位中外聞名的尊貴客人。\n突然，一起命案打破了慶典的氣氛，而兇手就在玩家當中！\n黑暗背後隱藏著什麽不為人知的玄機？誰才是幕後真兇？\n你又將如何洗脫嫌疑，逃出生天？",
         role: {
