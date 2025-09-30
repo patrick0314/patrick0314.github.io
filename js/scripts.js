@@ -74,10 +74,17 @@ function renderCards(scripts) {
         return;
     }
 
+    // 獲取當前頁面的篩選參數字串
+    const currentParamsString = window.location.search.substring(1);
+
     scripts.forEach(script => {
         const typeTags = script.type.map(t => `<span>${t}</span>`).join('');
+        
+        // 為詳情頁連結加上當前的篩選參數
+        const detailLink = `details.html?id=${script.id}${currentParamsString ? '&' + currentParamsString : ''}`;
+
         const cardHTML = `
-            <a href="details.html?id=${script.id}" class="card-link">
+            <a href="${detailLink}" class="card-link">
                 <div class="script-card">
                     ${script.date ? '<div class="played-ribbon">已玩過</div>' : ''}
                     

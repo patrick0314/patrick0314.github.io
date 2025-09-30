@@ -277,6 +277,55 @@
     to {transform: translate(-50%, -50%) scale(1);}
 }
 
+/* --- Details Page Navigation Styles --- */
+.details-navigation {
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between; /* 讓兩個連結分置左右 */
+    align-items: center;
+}
+
+.details-navigation .nav-link {
+    color: #eee;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    max-width: 45%; /* 限制最大寬度，避免標題太長時重疊 */
+}
+
+.details-navigation .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.details-navigation .nav-link span {
+    font-size: 0.9em;
+    color: #aaa;
+}
+
+.details-navigation .nav-link h4 {
+    margin: 5px 0 0 0;
+    font-size: 1.2em;
+}
+
+.details-navigation .nav-link.next {
+    text-align: right; /* 讓「下一篇」的文字靠右對齊 */
+}
+
+/* 手機版響應式設計 */
+@media (max-width: 768px) {
+    .details-navigation {
+        flex-direction: column; /* 改為垂直排列 */
+        gap: 20px;
+    }
+
+    .details-navigation .nav-link {
+        max-width: 100%;
+        width: 100%;
+        text-align: center !important; /* 所有文字都置中 */
+    }
+}
+
 /* 手機版響應式設計 */
 @media (max-width: 768px) {
     .main-info-grid {

@@ -2,9 +2,26 @@ document.addEventListener('DOMContentLoaded', async function() {
     const mainContent = document.getElementById('details-main-content');
     const errorMessage = document.getElementById('error-message');
 
-    // --- 1. 查找劇本資料 (邏輯不變) ---
+    // 1. 讀取 URL 中的所有參數
     const params = new URLSearchParams(window.location.search);
     const scriptId = params.get('id');
+    const activeFilters = {
+        players: params.get('players'),
+        dm: params.get('dm'),
+        genre: params.get('genre'),
+        type: params.get('type'),
+        done: params.get('done')
+    };
+
+    // 2. 根據 URL 參數，從總列表中篩選出本次瀏覽的上下文列表
+    const contextScripts = scriptsData.filter(script => {
+        const playersMatch = !activeFilters.players || script.players.toString() === activeFilters.players;
+        const dmMatch = !activeFilters.dm || script.dm === activeFilters.dm;
+        const genreMatch = !activeFilters.genre || script.genre === activeFilters.genre;
+        const doneMatch = !activeFilters.done || script.done.toString() === activeFilters.done;
+        const typeMatch = !activeFilters.type || script.type.includes(activeFilters.type);
+        return playersMatch && dmMatch && genreMatch && doneMatch && typeMatch;
+    });
 
     if (!scriptId) {
         showError("找不到劇本 ID。");
@@ -17,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         return;
     }
 
-    // --- 2. 動態生成卡片的 HTML ---
+    // --- 3. 動態生成卡片的 HTML ---
     document.title = `${script.title} - 劇本詳情`; // 更新網頁標題
 
     // 卡片：主要資訊
@@ -95,8 +112,39 @@ document.addEventListener('DOMContentLoaded', async function() {
         </div>
     `;
 
+    // 在「篩選後的列表」中尋找上/下一個劇本
+    const currentIndex = contextScripts.findIndex(s => s.id === scriptId);
+    const prevScript = currentIndex > 0 ? contextScripts[currentIndex - 1] : null;
+    const nextScript = currentIndex < contextScripts.length - 1 ? contextScripts[currentIndex + 1] : null;
+
+    // 生成頁面底部的導覽連結卡片
+    const currentParamsString = window.location.search.substring(1).replace(/&?id=[^&]*/g, '');
+    let navigationCard = '';
+    if (prevScript || nextScript) {
+        const prevLink = prevScript 
+            ? `<a href="details.html?id=${prevScript.id}${currentParamsString ? '&' + currentParamsString : ''}" class="nav-link prev">
+                 <span>&larr; 上一篇</span>
+                 <h4>${prevScript.title}</h4>
+               </a>`
+            : '<div></div>';
+
+        const nextLink = nextScript
+            ? `<a href="details.html?id=${nextScript.id}${currentParamsString ? '&' + currentParamsString : ''}" class="nav-link next">
+                 <span>下一篇 &rarr;</span>
+                 <h4>${nextScript.title}</h4>
+               </a>`
+            : '<div></div>';
+
+        navigationCard = `
+            <div class="details-card details-navigation">
+                ${prevLink}
+                ${nextLink}
+            </div>
+        `;
+    }
+
     // --- 3. 將所有卡片插入頁面 ---
-    mainContent.innerHTML = mainInfoCard + descriptionCard + rolesCard + experienceCard;
+    mainContent.innerHTML = mainInfoCard + descriptionCard + rolesCard + experienceCard + navigationCard;
 
     // --- 初始化圖片燈箱的功能 ---
     initializeImageModal();
