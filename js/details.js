@@ -1,4 +1,4 @@
-import { filterScriptsByUrlParams } from './utils.js'; // 【新增】從 utils.js 匯入函數
+import { filterScriptsByUrlParams } from './utils.js';
 
 document.addEventListener('DOMContentLoaded', async function() {
     const mainContent = document.getElementById('details-main-content');
@@ -13,29 +13,35 @@ document.addEventListener('DOMContentLoaded', async function() {
             return;
         }
 
-        // --- 1. 只 fetch 當前劇本的資料 ---
-        const scriptResponse = await fetch(`./data/scripts/${scriptId}.json`);
-        if (!scriptResponse.ok) throw new Error('找不到對應的劇本資料。');
-        const script = await scriptResponse.json();
+        // --- 1. 非同步獲取所有需要的資料 ---
+        const indexResponse = await fetch('./data/scripts-index.json');
+        const scriptIndex = await indexResponse.json();
+        const allScriptsPromises = scriptIndex.map(item => fetch(`./data/scripts/${item.id}.json`).then(res => res.json()));
+        const allScriptsData = await Promise.all(allScriptsPromises);
 
-        // --- 2. 【修改】從 sessionStorage 獲取上下文列表 ---
-        let contextIds = [];
-        const storedIds = sessionStorage.getItem('filteredScriptIds');
-
-        if (storedIds) {
-            // 如果 sessionStorage 中有儲存的篩選結果，直接使用
-            contextIds = JSON.parse(storedIds);
-        } else {
-            // 如果沒有（例如直接訪問此頁），則退回載入完整索引作為上下文
-            const indexResponse = await fetch('./data/scripts-index.json');
-            const scriptIndex = await indexResponse.json();
-            contextIds = scriptIndex.map(item => item.id);
+        // --- 2. 找到當前劇本與篩選後的上下文列表 ---
+        const script = allScriptsData.find(s => s.id === scriptId);
+        if (!script) throw new Error('找不到對應的劇本資料。');
+        
+        // 步驟 A: 根據 URL 參數進行篩選
+        let contextScripts = filterScriptsByUrlParams(allScriptsData, params);
+        
+        // 步驟 B: 讀取並應用儲存的排序狀態
+        const savedSort = sessionStorage.getItem('sortBy');
+        if (savedSort) {
+            if (savedSort === 'date') {
+                contextScripts.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+            } else if (savedSort === 'rating') {
+                contextScripts.sort((a, b) => (b.rating.total || 0) - (a.rating.total || 0));
+            } else if (savedSort === 'players') {
+                contextScripts.sort((a, b) => (a.players || 0) - (b.players || 0));
+            }
         }
         
-        // --- 3. 在上下文中尋找上/下一個劇本 ID ---
-        const currentIndex = contextIds.indexOf(scriptId);
-        const prevScriptId = currentIndex > 0 ? contextIds[currentIndex - 1] : null;
-        const nextScriptId = currentIndex < contextIds.length - 1 ? contextIds[currentIndex + 1] : null;
+        // --- 3. 在「已排序和篩選的列表」中尋找上/下一個劇本 ---
+        const currentIndex = contextScripts.findIndex(s => s.id === scriptId);
+        const prevScript = currentIndex > 0 ? contextScripts[currentIndex - 1] : null;
+        const nextScript = currentIndex < contextScripts.length - 1 ? contextScripts[currentIndex + 1] : null;
 
         // --- 4. 動態生成所有卡片的 HTML ---
         document.title = `${script.title} - 劇本詳情`;
@@ -43,7 +49,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         // 卡片一：主要資訊
         const mainInfoCard = `
             <div class="details-card main-info-grid">
-                <img id="script-image" src="${script.image}" alt="${script.title} 封面">
+                <img id="script-image" src="${script.image}" alt="《${script.title}》的劇本封面圖">
                 <div class="script-info">
                     <h2 id="script-title">${script.title}</h2>
                     <div id="script-tags">
@@ -109,19 +115,21 @@ document.addEventListener('DOMContentLoaded', async function() {
             </div>
         `;
 
-        // 簡化導覽連結卡片，不再顯示標題
+        // 卡片五：導覽連結
         const currentParamsString = window.location.search.substring(1).replace(/&?id=[^&]*/g, '');
         let navigationCard = '';
-        if (prevScriptId || nextScriptId) {
-            const prevLink = prevScriptId 
-                ? `<a href="details.html?id=${prevScriptId}${currentParamsString ? '&' + currentParamsString : ''}" class="nav-link prev">
+        if (prevScript || nextScript) {
+            const prevLink = prevScript 
+                ? `<a href="details.html?id=${prevScript.id}${currentParamsString ? '&' + currentParamsString : ''}" class="nav-link prev">
                      <span>&larr; 上一篇</span>
+                     <h4>${prevScript.title}</h4>
                    </a>`
                 : '<div></div>';
 
-            const nextLink = nextScriptId
-                ? `<a href="details.html?id=${nextScriptId}${currentParamsString ? '&' + currentParamsString : ''}" class="nav-link next">
+            const nextLink = nextScript
+                ? `<a href="details.html?id=${nextScript.id}${currentParamsString ? '&' + currentParamsString : ''}" class="nav-link next">
                      <span>下一篇 &rarr;</span>
+                     <h4>${nextScript.title}</h4>
                    </a>`
                 : '<div></div>';
 
@@ -135,12 +143,10 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         // --- 5. 將所有卡片插入頁面 ---
         mainContent.innerHTML = mainInfoCard + descriptionCard + rolesCard + experienceCard + navigationCard;
-
+        
         // --- 動態設定返回按鈕的連結 ---
         const backLink = document.getElementById('back-to-list-link');
         if (backLink) {
-            // currentParamsString 變數我們在生成上/下一篇按鈕時已經建立好了
-            // 它包含了除了 id 以外的所有篩選參數
             const backHref = `scripts.html${currentParamsString ? '?' + currentParamsString : ''}`;
             backLink.href = backHref;
         }

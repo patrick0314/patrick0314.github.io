@@ -1,24 +1,23 @@
-import { filterScriptsByUrlParams } from './utils.js'; // 從 utils.js 匯入函數
+import { filterScriptsByUrlParams } from './utils.js';
 
 document.addEventListener('DOMContentLoaded', async function() {
+    // --- 1. 獲取頁面元素 ---
     const container = document.querySelector('.scripts-container');
     const filterTitle = document.querySelector('#filter-title');
-    const searchInput = document.getElementById('search-input'); // 獲取搜尋框
+    const searchInput = document.getElementById('search-input');
     const sortSelect = document.getElementById('sort-select');
 
-    let scriptsData = []; // 用來存放從 JSON 載入的完整劇本資料
-    let filteredScripts = []; // 用來存放被 URL 篩選過的劇本資料
-    
-    // --- 主執行函數 ---
+    let scriptsData = [];
+    let filteredScripts = [];
+
+    // --- 2. 主執行函數 ---
     async function main() {
         try {
-            // 載入所有劇本資料
             const indexResponse = await fetch('./data/scripts-index.json');
             const scriptIndex = await indexResponse.json();
             const scriptPromises = scriptIndex.map(item => fetch(`./data/scripts/${item.id}.json`).then(res => res.json()));
             scriptsData = await Promise.all(scriptPromises);
 
-            // 根據 URL 參數進行初始篩選
             const params = new URLSearchParams(window.location.search);
             filteredScripts = filterScriptsByUrlParams(scriptsData, params);
 
@@ -26,24 +25,22 @@ document.addEventListener('DOMContentLoaded', async function() {
             const filteredIds = filteredScripts.map(script => script.id);
             sessionStorage.setItem('filteredScriptIds', JSON.stringify(filteredIds));
 
-            // 更新頁面標題
+            const savedSort = sessionStorage.getItem('sortBy');
+            const savedSearch = sessionStorage.getItem('searchTerm');
+
+            if (savedSort) sortSelect.value = savedSort;
+            if (savedSearch) searchInput.value = savedSearch;
+
             updateTitle(params);
-            
-            // 初始渲染
             updateDisplay();
 
-            // 綁定事件監聽器
             sortSelect.addEventListener('change', updateDisplay);
-
-            // 搜尋功能加入 Debounce
-            let debounceTimer; // 建立一個計時器變數
+            let debounceTimer;
             searchInput.addEventListener('input', () => {
-                // 每當使用者輸入時，先清除上一個計時器
                 clearTimeout(debounceTimer);
-                // 然後設定一個新的計時器，延遲 300 毫秒後才真正執行更新
                 debounceTimer = setTimeout(() => {
                     updateDisplay();
-                }, 300); // 300 毫秒是一個不錯的延遲時間
+                }, 300);
             });
 
         } catch (error) {
@@ -73,6 +70,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         // 獲取當前的排序和搜尋條件
         const sortBy = sortSelect.value;
         const searchTerm = searchInput.value.toLowerCase();
+
+        // 在更新顯示時，將當前狀態存入 sessionStorage
+        sessionStorage.setItem('sortBy', sortBy);
+        sessionStorage.setItem('searchTerm', searchTerm);
 
         // 從已被 URL 篩選過的結果開始
         let scriptsToShow = [...filteredScripts];
@@ -104,29 +105,23 @@ document.addEventListener('DOMContentLoaded', async function() {
 // 將卡片渲染的邏輯獨立成一個函數
 function renderCards(scripts) {
     const container = document.querySelector('.scripts-container');
-    container.innerHTML = ''; // 清空現有內容
+    container.innerHTML = ''; 
 
     if (scripts.length === 0) {
-        container.innerHTML = `
-            <div class="no-results">
-                <p>找不到符合條件的劇本。</p>
-            </div>
-        `;
+        container.innerHTML = `...`; // 無結果的 HTML
         return;
     }
-
+    
     // 獲取當前頁面的篩選參數字串
     const currentParamsString = window.location.search.substring(1);
 
-    // 【修改】改為逐一建立元素以控制動畫
     scripts.forEach((script, index) => {
         const typeTags = script.type.map(t => `<span>${t}</span>`).join('');
         
-        // 1. 先建立一個 div 容器
-        const wrapper = document.createElement('div');
-
-        // 2. 將卡片的完整 HTML 放入容器中
+        // 為詳情頁連結加上當前的篩選參數
         const detailLink = `details.html?id=${script.id}${currentParamsString ? '&' + currentParamsString : ''}`;
+
+        const wrapper = document.createElement('div');
         wrapper.innerHTML = `
             <a href="${detailLink}" class="card-link">
                 <div class="script-card">
@@ -145,18 +140,13 @@ function renderCards(scripts) {
             </a>
         `;
         
-        // 3. 從容器中提取出真正的卡片元素
         const cardLink = wrapper.firstElementChild;
         const cardElement = cardLink.querySelector('.script-card');
         
-        // 4. 根據卡片的順序，設定不同的動畫延遲時間
-        cardElement.style.transitionDelay = `${index * 100}ms`; // 每張卡片依序延遲 0.1 秒
+        cardElement.style.transitionDelay = `${index * 100}ms`;
         
-        // 5. 將卡片加入到頁面中
         container.appendChild(cardLink);
 
-        // 6. 使用一個極短的延遲後，為卡片加上 is-visible class 來觸發動畫
-        //    (這個延遲是為了確保瀏覽器有時間先渲染初始狀態)
         setTimeout(() => {
             cardElement.classList.add('is-visible');
         }, 10);
