@@ -1,3 +1,30 @@
+/* --- Loading Spinner Styles --- */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh; /* 讓容器至少有半個螢幕高，確保能垂直置中 */
+    color: #aaa;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.2); /* 淺灰色軌道 */
+    border-top-color: #eee; /* 亮白色旋轉部分 */
+    border-radius: 50%;
+    animation: spin 1s linear infinite; /* 套用旋轉動畫 */
+    margin-bottom: 20px;
+}
+
+/* 定義旋轉動畫 */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 /* --- Details Page Styles --- */
 
 /* 通用詳情卡片樣式 */
