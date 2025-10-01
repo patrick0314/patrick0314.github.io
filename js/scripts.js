@@ -28,7 +28,17 @@ document.addEventListener('DOMContentLoaded', async function() {
 
             // 綁定事件監聽器
             sortSelect.addEventListener('change', updateDisplay);
-            searchInput.addEventListener('input', updateDisplay);
+
+            // 搜尋功能加入 Debounce
+            let debounceTimer; // 建立一個計時器變數
+            searchInput.addEventListener('input', () => {
+                // 每當使用者輸入時，先清除上一個計時器
+                clearTimeout(debounceTimer);
+                // 然後設定一個新的計時器，延遲 300 毫秒後才真正執行更新
+                debounceTimer = setTimeout(() => {
+                    updateDisplay();
+                }, 300); // 300 毫秒是一個不錯的延遲時間
+            });
 
         } catch (error) {
             console.error("載入劇本資料失敗", error);
