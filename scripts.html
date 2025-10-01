@@ -12,7 +12,17 @@
 
     <main>
         <div class="page-header">
+            <div class="sort-wrapper">
+                <select id="sort-select">
+                    <option value="default">預設排序</option>
+                    <option value="date">按遊玩日期</option>
+                    <option value="rating">按綜合評分</option>
+                    <option value="players">按遊玩人數</option>
+                </select>
+            </div>
+            
             <h2 id="filter-title" class="page-title">劇本</h2>
+            
             <div class="search-wrapper">
                 <input type="search" id="search-input" placeholder="從結果中搜尋劇本名稱...">
             </div>

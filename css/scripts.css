@@ -1,27 +1,44 @@
 /* --- Scripts Page Styles --- */
-.page-title {
-    text-align: center;
-    font-size: 2.5em;
-    color: rgb(255, 204, 77);
-    margin: 0; /* 移除上下邊距 */
-}
-
 /* 頁首容器樣式 */
 .page-header {
-    position: relative; /* 設為相對定位，作為搜尋框絕對定位的基準 */
     display: flex;
-    justify-content: center; /* 讓內容 (標題) 水平置中 */
+    justify-content: space-between; /* 讓三個區塊平均分布 */
     align-items: center;
     max-width: 1400px;
     margin: 40px auto;
     padding: 0 5%;
 }
 
+.page-title {
+    text-align: center;
+    font-size: 2.5em;
+    color: rgb(255, 204, 77);
+    margin: 0;
+    flex-grow: 1; /* 讓標題佔據中間的主要空間 */
+}
+
+/* 排序選單容器樣式 */
+.sort-wrapper,
 .search-wrapper {
-    position: absolute; /* 改為絕對定位 */
-    right: 5%;        /* 定位到容器右側 (5% 是為了對齊內容的 padding) */
-    top: 50%;         /* 垂直置中 */
-    transform: translateY(-50%); /* 精準垂直置中 */
+    flex: 0 0 280px; /* 【修改】讓左右兩側容器有固定的基礎寬度 */
+}
+
+/* 下拉選單樣式 */
+#sort-select {
+    width: 100%; /* 撐滿容器寬度 */
+    padding: 10px 18px;
+    font-size: 1em;
+    color: #eee;
+    background-color: rgb(60, 60, 60);
+    border: 1px solid rgb(95, 95, 95);
+    border-radius: 25px;
+    -webkit-appearance: none; /* 移除原生外觀 (for Safari/Chrome) */
+    appearance: none;
+    cursor: pointer;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23cccccc%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 18px top 50%;
+    background-size: .65em auto;
 }
 
 /* 搜尋框樣式 */
