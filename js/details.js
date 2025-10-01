@@ -1,156 +1,165 @@
+// 【修正】開頭打字錯誤
 document.addEventListener('DOMContentLoaded', async function() {
     const mainContent = document.getElementById('details-main-content');
     const errorMessage = document.getElementById('error-message');
 
-    // 1. 讀取 URL 中的所有參數
-    const params = new URLSearchParams(window.location.search);
-    const scriptId = params.get('id');
-    const activeFilters = {
-        players: params.get('players'),
-        dm: params.get('dm'),
-        genre: params.get('genre'),
-        type: params.get('type'),
-        done: params.get('done')
-    };
-
-    // 2. 根據 URL 參數，從總列表中篩選出本次瀏覽的上下文列表
-    const contextScripts = scriptsData.filter(script => {
-        const playersMatch = !activeFilters.players || script.players.toString() === activeFilters.players;
-        const dmMatch = !activeFilters.dm || script.dm === activeFilters.dm;
-        const genreMatch = !activeFilters.genre || script.genre === activeFilters.genre;
-        const doneMatch = !activeFilters.done || script.done.toString() === activeFilters.done;
-        const typeMatch = !activeFilters.type || script.type.includes(activeFilters.type);
-        return playersMatch && dmMatch && genreMatch && doneMatch && typeMatch;
-    });
-
-    if (!scriptId) {
-        showError("找不到劇本 ID。");
-        return;
-    }
-    const script = scriptsData.find(s => s.id === scriptId);
-
-    if (!script) {
-        showError("找不到對應的劇本資料。");
-        return;
+    // 將篩選邏輯函數定義在主函數的頂層，方便調用
+    function filterScripts(scripts, params) {
+        const activeFilters = {
+            players: params.get('players'),
+            dm: params.get('dm'),
+            genre: params.get('genre'),
+            type: params.get('type'),
+            done: params.get('done'),
+        };
+        const hasFilters = Array.from(params.keys()).some(k => k !== 'id');
+        
+        return hasFilters ? scripts.filter(script => {
+            const playersMatch = !activeFilters.players || script.players.toString() === activeFilters.players;
+            const dmMatch = !activeFilters.dm || script.dm === activeFilters.dm;
+            const genreMatch = !activeFilters.genre || script.genre === activeFilters.genre;
+            const doneMatch = !activeFilters.done ||  (script.done !== undefined && script.done !== null && script.done.toString() === activeFilters.done);
+            const typeMatch = !activeFilters.type || script.type.includes(activeFilters.type);
+            return playersMatch && dmMatch && genreMatch && doneMatch && typeMatch;
+        }) : scripts;
     }
 
-    // --- 3. 動態生成卡片的 HTML ---
-    document.title = `${script.title} - 劇本詳情`; // 更新網頁標題
+    try {
+        const params = new URLSearchParams(window.location.search);
+        const scriptId = params.get('id');
 
-    // 卡片：主要資訊
-    const mainInfoCard = `
-        <div class="details-card main-info-grid">
-            <img id="script-image" src="${script.image}" alt="${script.title} 封面">
-            <div class="script-info">
-                <h2 id="script-title">${script.title}</h2>
-                <div id="script-tags">
-                    <span>${script.players} 人</span>
-                    <span>${script.dm}</span>
-                    <span>${script.genre}</span>
-                    ${script.type.map(t => `<span>${t}</span>`).join('')}
-                    ${script.date ? `
-                        <span class="played-date-tag">
-                            <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z"/></svg>
-                            ${script.date} done
-                        </span>
-                    ` : ''}
-                </div>
-                <div class="rating-section">
-                    ${generateRatingItem('綜合評分：', script.rating.total)}
-                    ${generateRatingItem('推理評分：', script.rating.difficulty)}
-                    ${generateRatingItem('劇情評分：', script.rating.story)}
-                </div>
-            </div>
-        </div>
-    `;
+        if (!scriptId) {
+            showError("找不到劇本 ID。");
+            return;
+        }
 
-    // 卡片：官方介紹
-    const descriptionCard = `
-        <div class="details-card details-card-description">
-            <h2>官方劇本介紹</h2>
-            <p>${script.description}</p>
-        </div>
-    `;
+        // --- 1. 【優化】調整載入順序：先載入全部資料，再從中尋找 ---
+        const indexResponse = await fetch('./data/scripts-index.json');
+        const scriptIndex = await indexResponse.json();
+        const allScriptsPromises = scriptIndex.map(item => fetch(`./data/scripts/${item.id}.json`).then(res => res.json()));
+        const allScriptsData = await Promise.all(allScriptsPromises);
 
-    // 卡片：角色簡介
-    let rolesCard = '';
-    // 檢查 role 物件是否存在且不為空
-    if (script.role && Object.keys(script.role).length > 0) {
-        // 使用 Object.entries 來遍歷角色名稱和介紹
-        const rolesHTML = Object.entries(script.role).map(([name, intro]) => `
-            <div class="role-cell">
-                <h4 class="role-name">${name}</h4>
-                <p class="role-intro">${intro || '<i>暫無簡介</i>'}</p>
-            </div>
-        `).join('');
+        // --- 2. 找到當前劇本與篩選後的上下文列表 ---
+        const script = allScriptsData.find(s => s.id === scriptId);
+        if (!script) throw new Error('找不到對應的劇本資料。');
 
-        rolesCard = `
-            <div class="details-card details-card-roles">
-                <h2>角色簡介</h2>
-                <div class="roles-grid">
-                    ${rolesHTML}
+        const contextScripts = filterScripts(allScriptsData, params);
+
+        // --- 3. 在「篩選後的列表」中尋找上/下一個劇本 ---
+        const currentIndex = contextScripts.findIndex(s => s.id === scriptId);
+        const prevScript = currentIndex > 0 ? contextScripts[currentIndex - 1] : null;
+        const nextScript = currentIndex < contextScripts.length - 1 ? contextScripts[currentIndex + 1] : null;
+
+        // --- 4. 動態生成所有卡片的 HTML ---
+        document.title = `${script.title} - 劇本詳情`;
+
+        // 卡片一：主要資訊
+        const mainInfoCard = `
+            <div class="details-card main-info-grid">
+                <img id="script-image" src="${script.image}" alt="${script.title} 封面">
+                <div class="script-info">
+                    <h2 id="script-title">${script.title}</h2>
+                    <div id="script-tags">
+                        <span>${script.players} 人</span>
+                        <span>${script.dm}</span>
+                        <span>${script.genre}</span>
+                        ${script.type.map(t => `<span>${t}</span>`).join('')}
+                        ${script.date ? `
+                            <span class="played-date-tag">
+                                <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z"/></svg>
+                                ${script.date} done
+                            </span>
+                        ` : ''}
+                    </div>
+                    <div class="rating-section">
+                        ${generateRatingItem('綜合評分：', script.rating.total)}
+                        ${generateRatingItem('推理評分：', script.rating.difficulty)}
+                        ${generateRatingItem('劇情評分：', script.rating.story)}
+                    </div>
                 </div>
             </div>
         `;
-    }
 
-    // 卡片：遊玩心得
-    let experienceCard = '';
-    const experienceContent = script.experience && Object.keys(script.experience).length > 0
-        ? Object.entries(script.experience).map(([reviewer, text]) => `
-            <div class="experience-item">
-                <h4 class="experience-reviewer">${reviewer}：</h4>
-                <p class="experience-text">${text}</p>
-            </div>
-        `).join('')
-        : '<p><i>暫無遊玩心得</i></p>'; // 如果沒有心得，顯示預設文字
-
-    experienceCard = `
-        <div class="details-card details-card-experience">
-            <h2>遊玩心得</h2>
-            ${experienceContent}
-        </div>
-    `;
-
-    // 在「篩選後的列表」中尋找上/下一個劇本
-    const currentIndex = contextScripts.findIndex(s => s.id === scriptId);
-    const prevScript = currentIndex > 0 ? contextScripts[currentIndex - 1] : null;
-    const nextScript = currentIndex < contextScripts.length - 1 ? contextScripts[currentIndex + 1] : null;
-
-    // 生成頁面底部的導覽連結卡片
-    const currentParamsString = window.location.search.substring(1).replace(/&?id=[^&]*/g, '');
-    let navigationCard = '';
-    if (prevScript || nextScript) {
-        const prevLink = prevScript 
-            ? `<a href="details.html?id=${prevScript.id}${currentParamsString ? '&' + currentParamsString : ''}" class="nav-link prev">
-                 <span>&larr; 上一篇</span>
-                 <h4>${prevScript.title}</h4>
-               </a>`
-            : '<div></div>';
-
-        const nextLink = nextScript
-            ? `<a href="details.html?id=${nextScript.id}${currentParamsString ? '&' + currentParamsString : ''}" class="nav-link next">
-                 <span>下一篇 &rarr;</span>
-                 <h4>${nextScript.title}</h4>
-               </a>`
-            : '<div></div>';
-
-        navigationCard = `
-            <div class="details-card details-navigation">
-                ${prevLink}
-                ${nextLink}
+        // 卡片二：官方介紹
+        const descriptionCard = `
+            <div class="details-card details-card-description">
+                <h2>官方劇本介紹</h2>
+                <p>${script.description}</p>
             </div>
         `;
+
+        // 卡片三：角色簡介
+        let rolesCard = '';
+        if (script.role && Object.keys(script.role).length > 0) {
+            const rolesHTML = Object.entries(script.role).map(([name, intro]) => `
+                <div class="role-cell">
+                    <h4 class="role-name">${name}</h4>
+                    <p class="role-intro">${intro || '<i>暫無簡介</i>'}</p>
+                </div>
+            `).join('');
+            rolesCard = `
+                <div class="details-card details-card-roles">
+                    <h2>角色簡介</h2>
+                    <div class="roles-grid">${rolesHTML}</div>
+                </div>
+            `;
+        }
+
+        // 卡片四：遊玩心得
+        let experienceCard = '';
+        const experienceContent = script.experience && Object.keys(script.experience).length > 0
+            ? Object.entries(script.experience).map(([reviewer, text]) => `
+                <div class="experience-item">
+                    <h4 class="experience-reviewer">${reviewer}：</h4>
+                    <p class="experience-text">${text}</p>
+                </div>
+            `).join('')
+            : '<p><i>暫無遊玩心得</i></p>';
+        experienceCard = `
+            <div class="details-card details-card-experience">
+                <h2>遊玩心得</h2>
+                ${experienceContent}
+            </div>
+        `;
+
+        // 只保留這一份導覽連結生成程式碼
+        const currentParamsString = window.location.search.substring(1).replace(/&?id=[^&]*/g, '');
+        let navigationCard = '';
+        if (prevScript || nextScript) {
+            const prevLink = prevScript 
+                ? `<a href="details.html?id=${prevScript.id}${currentParamsString ? '&' + currentParamsString : ''}" class="nav-link prev">
+                     <span>&larr; 上一篇</span>
+                     <h4>${prevScript.title}</h4>
+                   </a>`
+                : '<div></div>';
+
+            const nextLink = nextScript
+                ? `<a href="details.html?id=${nextScript.id}${currentParamsString ? '&' + currentParamsString : ''}" class="nav-link next">
+                     <span>下一篇 &rarr;</span>
+                     <h4>${nextScript.title}</h4>
+                   </a>`
+                : '<div></div>';
+
+            navigationCard = `
+                <div class="details-card details-navigation">
+                    ${prevLink}
+                    ${nextLink}
+                </div>
+            `;
+        }
+
+        // --- 5. 將所有卡片插入頁面 ---
+        mainContent.innerHTML = mainInfoCard + descriptionCard + rolesCard + experienceCard + navigationCard;
+
+        // --- 初始化圖片燈箱的功能 ---
+        initializeImageModal();
+
+    } catch (error) {
+        console.error("載入劇本詳情失敗:", error);
+        showError(error.message || "無法載入劇本資料。");
     }
-
-    // --- 3. 將所有卡片插入頁面 ---
-    mainContent.innerHTML = mainInfoCard + descriptionCard + rolesCard + experienceCard + navigationCard;
-
-    // --- 初始化圖片燈箱的功能 ---
-    initializeImageModal();
 
     // --- 輔助函數 ---
-
     function showError(message) {
         errorMessage.textContent = message;
         errorMessage.style.display = 'block';

@@ -1,63 +1,77 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     const container = document.querySelector('.scripts-container');
     const filterTitle = document.querySelector('#filter-title');
 
-    // 1. 獲取 URL 中的所有篩選參數
-    const params = new URLSearchParams(window.location.search);
-    const activeFilters = {
-        players: params.get('players'),
-        dm: params.get('dm'),
-        genre: params.get('genre'),
-        type: params.get('type'),
-        done: params.get('done'),
-    };
+    try {
+        // 1. 首先 fetch 索引檔案
+        const indexResponse = await fetch('./data/scripts-index.json');
+        const scriptIndex = await indexResponse.json();
 
-    // 2. 根據篩選條件過濾劇本資料
-    //    只有當 URL 中有參數時，才進行過濾
-    const hasFilters = Array.from(params.keys()).length > 0;
-    const filteredScripts = hasFilters ? scriptsData.filter(script => {
-        // 檢查每個條件，如果 URL 中沒有該參數，則視為符合條件
-        const playersMatch = !activeFilters.players || script.players.toString() === activeFilters.players;
-        const dmMatch = !activeFilters.dm || script.dm === activeFilters.dm;
-        const genreMatch = !activeFilters.genre || script.genre === activeFilters.genre;
-        const doneMatch = !activeFilters.done || script.done.toString() === activeFilters.done;
-        // 對於 type，檢查陣列中是否包含指定的類型
-        const typeMatch = !activeFilters.type || script.type.includes(activeFilters.type);
+        // 2. 根據索引，非同步地 fetch 所有劇本的資料
+        const scriptPromises = scriptIndex.map(item => fetch(`./data/scripts/${item.id}.json`).then(res => res.json()));
+        const scriptsData = await Promise.all(scriptPromises);
 
-        return playersMatch && dmMatch && genreMatch && doneMatch && typeMatch;
-    }) : scriptsData; // 如果沒有任何篩選參數，則顯示全部劇本
+        // --- 後續的篩選和渲染邏輯與之前幾乎相同 ---
 
-    // 3. 更新頁面標題
-    if (hasFilters) {
-        const titleParts = [];
-        params.forEach((value, key) => {
-            // 我們只將主要的篩選條件放入標題，可以自行增減
-            if (key === 'players') {
-                titleParts.push(`${value}人本`); // 特別處理人數，加上 "人本"
-            } else if (key === 'type' || key === 'genre' || key === 'dm') {
-                titleParts.push(value);
-            } else if (key === 'done') {
-                if (value === '0') {
-                    titleParts.push(`未遊玩劇本`);
-                } else if (value === '1') {
-                    titleParts.push(`已遊玩劇本`);
+        // 3. 獲取 URL 中的所有篩選參數
+        const params = new URLSearchParams(window.location.search);
+        const activeFilters = {
+            players: params.get('players'),
+            dm: params.get('dm'),
+            genre: params.get('genre'),
+            type: params.get('type'),
+            done: params.get('done'),
+        };
+
+        // 4. 根據篩選條件過濾劇本資料
+        //    只有當 URL 中有參數時，才進行過濾
+        const hasFilters = Array.from(params.keys()).length > 0;
+        const filteredScripts = hasFilters ? scriptsData.filter(script => {
+            // 檢查每個條件，如果 URL 中沒有該參數，則視為符合條件
+            const playersMatch = !activeFilters.players || script.players.toString() === activeFilters.players;
+            const dmMatch = !activeFilters.dm || script.dm === activeFilters.dm;
+            const genreMatch = !activeFilters.genre || script.genre === activeFilters.genre;
+            const doneMatch = !activeFilters.done || script.done.toString() === activeFilters.done;
+            // 對於 type，檢查陣列中是否包含指定的類型
+            const typeMatch = !activeFilters.type || script.type.includes(activeFilters.type);
+
+            return playersMatch && dmMatch && genreMatch && doneMatch && typeMatch;
+        }) : scriptsData; // 如果沒有任何篩選參數，則顯示全部劇本
+
+        // 5. 更新頁面標題
+        if (hasFilters) {
+            const titleParts = [];
+            params.forEach((value, key) => {
+                // 我們只將主要的篩選條件放入標題，可以自行增減
+                if (key === 'players') {
+                    titleParts.push(`${value}人本`); // 特別處理人數，加上 "人本"
+                } else if (key === 'type' || key === 'genre' || key === 'dm') {
+                    titleParts.push(value);
+                } else if (key === 'done') {
+                    if (value === '0') {
+                        titleParts.push(`未遊玩劇本`);
+                    } else if (value === '1') {
+                        titleParts.push(`已遊玩劇本`);
+                    }
                 }
+            });
+
+            if (titleParts.length > 0) {
+                filterTitle.textContent = titleParts.join(' & ');
+            } else {
+                filterTitle.textContent = '劇本';
             }
-        });
 
-        if (titleParts.length > 0) {
-            filterTitle.textContent = titleParts.join(' & ');
         } else {
-            filterTitle.textContent = '劇本';
+            filterTitle.textContent = '全部劇本';
         }
-
-    } else {
-        filterTitle.textContent = '全部劇本';
-    }
     
-    // 4. 將最終結果渲染到頁面上
-    renderCards(filteredScripts);
-
+        // 6. 將最終結果渲染到頁面上
+        renderCards(filteredScripts);
+    } catch (error) {
+        console.error("載入劇本資料失敗", error);
+        container.innerHTML = '<p class="page-title">無法載入劇本資料。</p>';
+    }
 });
 
 // 將卡片渲染的邏輯獨立成一個函數
