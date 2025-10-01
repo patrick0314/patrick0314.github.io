@@ -132,6 +132,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         // --- 5. 將所有卡片插入頁面 ---
         mainContent.innerHTML = mainInfoCard + descriptionCard + rolesCard + experienceCard + navigationCard;
 
+        // --- 動態設定返回按鈕的連結 ---
+        const backLink = document.getElementById('back-to-list-link');
+        if (backLink) {
+            // currentParamsString 變數我們在生成上/下一篇按鈕時已經建立好了
+            // 它包含了除了 id 以外的所有篩選參數
+            const backHref = `scripts.html${currentParamsString ? '?' + currentParamsString : ''}`;
+            backLink.href = backHref;
+        }
+
         // --- 初始化圖片燈箱的功能 ---
         initializeImageModal();
 
