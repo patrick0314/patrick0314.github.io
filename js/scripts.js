@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', async function() {
     const container = document.querySelector('.scripts-container');
     const filterTitle = document.querySelector('#filter-title');
+    const searchInput = document.getElementById('search-input'); // 獲取搜尋框
 
     try {
         // 1. 首先 fetch 索引檔案
@@ -10,8 +11,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         // 2. 根據索引，非同步地 fetch 所有劇本的資料
         const scriptPromises = scriptIndex.map(item => fetch(`./data/scripts/${item.id}.json`).then(res => res.json()));
         const scriptsData = await Promise.all(scriptPromises);
-
-        // --- 後續的篩選和渲染邏輯與之前幾乎相同 ---
 
         // 3. 獲取 URL 中的所有篩選參數
         const params = new URLSearchParams(window.location.search);
@@ -68,6 +67,19 @@ document.addEventListener('DOMContentLoaded', async function() {
     
         // 6. 將最終結果渲染到頁面上
         renderCards(filteredScripts);
+
+        // 7. 監聽搜尋框的輸入事件
+        searchInput.addEventListener('input', function() {
+            const searchTerm = searchInput.value.toLowerCase();
+
+            // 從「已被 URL 篩選過」的結果中，再進行文字搜尋
+            const searchResults = filteredScripts.filter(script => {
+                return script.title.toLowerCase().includes(searchTerm);
+            });
+
+            // 根據搜尋結果，重新渲染卡片列表
+            renderCards(searchResults);
+        });
     } catch (error) {
         console.error("載入劇本資料失敗", error);
         container.innerHTML = '<p class="page-title">無法載入劇本資料。</p>';
