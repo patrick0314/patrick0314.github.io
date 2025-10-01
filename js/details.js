@@ -1,6 +1,5 @@
 import { filterScriptsByUrlParams } from './utils.js'; // 【新增】從 utils.js 匯入函數
 
-// 開頭打字錯誤
 document.addEventListener('DOMContentLoaded', async function() {
     const mainContent = document.getElementById('details-main-content');
     const errorMessage = document.getElementById('error-message');
@@ -14,22 +13,29 @@ document.addEventListener('DOMContentLoaded', async function() {
             return;
         }
 
-        // --- 1. 【優化】調整載入順序：先載入全部資料，再從中尋找 ---
-        const indexResponse = await fetch('./data/scripts-index.json');
-        const scriptIndex = await indexResponse.json();
-        const allScriptsPromises = scriptIndex.map(item => fetch(`./data/scripts/${item.id}.json`).then(res => res.json()));
-        const allScriptsData = await Promise.all(allScriptsPromises);
+        // --- 1. 只 fetch 當前劇本的資料 ---
+        const scriptResponse = await fetch(`./data/scripts/${scriptId}.json`);
+        if (!scriptResponse.ok) throw new Error('找不到對應的劇本資料。');
+        const script = await scriptResponse.json();
 
-        // --- 2. 找到當前劇本與篩選後的上下文列表 ---
-        const script = allScriptsData.find(s => s.id === scriptId);
-        if (!script) throw new Error('找不到對應的劇本資料。');
+        // --- 2. 【修改】從 sessionStorage 獲取上下文列表 ---
+        let contextIds = [];
+        const storedIds = sessionStorage.getItem('filteredScriptIds');
 
-        const contextScripts = filterScriptsByUrlParams(allScriptsData, params);
-
-        // --- 3. 在「篩選後的列表」中尋找上/下一個劇本 ---
-        const currentIndex = contextScripts.findIndex(s => s.id === scriptId);
-        const prevScript = currentIndex > 0 ? contextScripts[currentIndex - 1] : null;
-        const nextScript = currentIndex < contextScripts.length - 1 ? contextScripts[currentIndex + 1] : null;
+        if (storedIds) {
+            // 如果 sessionStorage 中有儲存的篩選結果，直接使用
+            contextIds = JSON.parse(storedIds);
+        } else {
+            // 如果沒有（例如直接訪問此頁），則退回載入完整索引作為上下文
+            const indexResponse = await fetch('./data/scripts-index.json');
+            const scriptIndex = await indexResponse.json();
+            contextIds = scriptIndex.map(item => item.id);
+        }
+        
+        // --- 3. 在上下文中尋找上/下一個劇本 ID ---
+        const currentIndex = contextIds.indexOf(scriptId);
+        const prevScriptId = currentIndex > 0 ? contextIds[currentIndex - 1] : null;
+        const nextScriptId = currentIndex < contextIds.length - 1 ? contextIds[currentIndex + 1] : null;
 
         // --- 4. 動態生成所有卡片的 HTML ---
         document.title = `${script.title} - 劇本詳情`;
@@ -103,21 +109,19 @@ document.addEventListener('DOMContentLoaded', async function() {
             </div>
         `;
 
-        // 只保留這一份導覽連結生成程式碼
+        // 簡化導覽連結卡片，不再顯示標題
         const currentParamsString = window.location.search.substring(1).replace(/&?id=[^&]*/g, '');
         let navigationCard = '';
-        if (prevScript || nextScript) {
-            const prevLink = prevScript 
-                ? `<a href="details.html?id=${prevScript.id}${currentParamsString ? '&' + currentParamsString : ''}" class="nav-link prev">
+        if (prevScriptId || nextScriptId) {
+            const prevLink = prevScriptId 
+                ? `<a href="details.html?id=${prevScriptId}${currentParamsString ? '&' + currentParamsString : ''}" class="nav-link prev">
                      <span>&larr; 上一篇</span>
-                     <h4>${prevScript.title}</h4>
                    </a>`
                 : '<div></div>';
 
-            const nextLink = nextScript
-                ? `<a href="details.html?id=${nextScript.id}${currentParamsString ? '&' + currentParamsString : ''}" class="nav-link next">
+            const nextLink = nextScriptId
+                ? `<a href="details.html?id=${nextScriptId}${currentParamsString ? '&' + currentParamsString : ''}" class="nav-link next">
                      <span>下一篇 &rarr;</span>
-                     <h4>${nextScript.title}</h4>
                    </a>`
                 : '<div></div>';
 

@@ -22,6 +22,10 @@ document.addEventListener('DOMContentLoaded', async function() {
             const params = new URLSearchParams(window.location.search);
             filteredScripts = filterScriptsByUrlParams(scriptsData, params);
 
+            // 將篩選後的劇本 ID 列表存入 sessionStorage
+            const filteredIds = filteredScripts.map(script => script.id);
+            sessionStorage.setItem('filteredScriptIds', JSON.stringify(filteredIds));
+
             // 更新頁面標題
             updateTitle(params);
             
