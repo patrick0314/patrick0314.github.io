@@ -1,28 +1,9 @@
-// 【修正】開頭打字錯誤
+import { filterScriptsByUrlParams } from './utils.js'; // 【新增】從 utils.js 匯入函數
+
+// 開頭打字錯誤
 document.addEventListener('DOMContentLoaded', async function() {
     const mainContent = document.getElementById('details-main-content');
     const errorMessage = document.getElementById('error-message');
-
-    // 將篩選邏輯函數定義在主函數的頂層，方便調用
-    function filterScripts(scripts, params) {
-        const activeFilters = {
-            players: params.get('players'),
-            dm: params.get('dm'),
-            genre: params.get('genre'),
-            type: params.get('type'),
-            done: params.get('done'),
-        };
-        const hasFilters = Array.from(params.keys()).some(k => k !== 'id');
-        
-        return hasFilters ? scripts.filter(script => {
-            const playersMatch = !activeFilters.players || script.players.toString() === activeFilters.players;
-            const dmMatch = !activeFilters.dm || script.dm === activeFilters.dm;
-            const genreMatch = !activeFilters.genre || script.genre === activeFilters.genre;
-            const doneMatch = !activeFilters.done ||  (script.done !== undefined && script.done !== null && script.done.toString() === activeFilters.done);
-            const typeMatch = !activeFilters.type || script.type.includes(activeFilters.type);
-            return playersMatch && dmMatch && genreMatch && doneMatch && typeMatch;
-        }) : scripts;
-    }
 
     try {
         const params = new URLSearchParams(window.location.search);
@@ -43,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         const script = allScriptsData.find(s => s.id === scriptId);
         if (!script) throw new Error('找不到對應的劇本資料。');
 
-        const contextScripts = filterScripts(allScriptsData, params);
+        const contextScripts = filterScriptsByUrlParams(allScriptsData, params);
 
         // --- 3. 在「篩選後的列表」中尋找上/下一個劇本 ---
         const currentIndex = contextScripts.findIndex(s => s.id === scriptId);

@@ -1,3 +1,5 @@
+import { filterScriptsByUrlParams } from './utils.js'; // 從 utils.js 匯入函數
+
 document.addEventListener('DOMContentLoaded', async function() {
     const container = document.querySelector('.scripts-container');
     const filterTitle = document.querySelector('#filter-title');
@@ -18,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
             // 根據 URL 參數進行初始篩選
             const params = new URLSearchParams(window.location.search);
-            filteredScripts = filterByUrlParams(scriptsData, params);
+            filteredScripts = filterScriptsByUrlParams(scriptsData, params);
 
             // 更新頁面標題
             updateTitle(params);
@@ -44,26 +46,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             console.error("載入劇本資料失敗", error);
             container.innerHTML = '<p class="page-title">無法載入劇本資料。</p>';
         }
-    }
-
-    // 根據 URL 參數篩選劇本
-    function filterByUrlParams(scripts, params) {
-        const activeFilters = {
-            players: params.get('players'),
-            dm: params.get('dm'),
-            genre: params.get('genre'),
-            type: params.get('type'),
-            done: params.get('done'),
-        };
-        const hasFilters = Array.from(params.keys()).length > 0;
-        return hasFilters ? scripts.filter(script => {
-            const playersMatch = !activeFilters.players || script.players.toString() === activeFilters.players;
-            const dmMatch = !activeFilters.dm || script.dm === activeFilters.dm;
-            const genreMatch = !activeFilters.genre || script.genre === activeFilters.genre;
-            const doneMatch = !activeFilters.done || script.done.toString() === activeFilters.done;
-            const typeMatch = !activeFilters.type || script.type.includes(activeFilters.type);
-            return playersMatch && dmMatch && genreMatch && doneMatch && typeMatch;
-        }) : scripts;
     }
 
     // 更新頁面標題
