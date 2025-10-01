@@ -118,18 +118,20 @@ function renderCards(scripts) {
     // 獲取當前頁面的篩選參數字串
     const currentParamsString = window.location.search.substring(1);
 
-    scripts.forEach(script => {
+    // 【修改】改為逐一建立元素以控制動畫
+    scripts.forEach((script, index) => {
         const typeTags = script.type.map(t => `<span>${t}</span>`).join('');
         
-        // 為詳情頁連結加上當前的篩選參數
-        const detailLink = `details.html?id=${script.id}${currentParamsString ? '&' + currentParamsString : ''}`;
+        // 1. 先建立一個 div 容器
+        const wrapper = document.createElement('div');
 
-        const cardHTML = `
+        // 2. 將卡片的完整 HTML 放入容器中
+        const detailLink = `details.html?id=${script.id}${currentParamsString ? '&' + currentParamsString : ''}`;
+        wrapper.innerHTML = `
             <a href="${detailLink}" class="card-link">
                 <div class="script-card">
                     ${script.date ? '<div class="played-ribbon">已玩過</div>' : ''}
-                    
-                    <img src="${script.image}" alt="${script.title}" loading="lazy">
+                    <img src="${script.image}" alt="《${script.title}》的劇本封面圖" loading="lazy">
                     <div class="card-content">
                         <h3>${script.title}</h3>
                         <div class="card-tags">
@@ -142,6 +144,21 @@ function renderCards(scripts) {
                 </div>
             </a>
         `;
-        container.innerHTML += cardHTML;
+        
+        // 3. 從容器中提取出真正的卡片元素
+        const cardLink = wrapper.firstElementChild;
+        const cardElement = cardLink.querySelector('.script-card');
+        
+        // 4. 根據卡片的順序，設定不同的動畫延遲時間
+        cardElement.style.transitionDelay = `${index * 100}ms`; // 每張卡片依序延遲 0.1 秒
+        
+        // 5. 將卡片加入到頁面中
+        container.appendChild(cardLink);
+
+        // 6. 使用一個極短的延遲後，為卡片加上 is-visible class 來觸發動畫
+        //    (這個延遲是為了確保瀏覽器有時間先渲染初始狀態)
+        setTimeout(() => {
+            cardElement.classList.add('is-visible');
+        }, 10);
     });
 }

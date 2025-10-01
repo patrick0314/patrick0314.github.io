@@ -74,7 +74,17 @@
     position: relative;
     overflow: hidden;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    /* 設定初始狀態與過渡效果 */
+    opacity: 0; /* 預設完全透明 */
+    transform: translateY(20px); /* 預設向下位移 20px */
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out; /* 設定過渡動畫 */
+}
+
+/* 當卡片擁有 .is-visible class 時的最終狀態 */
+.script-card.is-visible {
+    opacity: 1; /* 完全可見 */
+    transform: translateY(0); /* 回到原位 */
 }
 
 /* 使用偽元素在卡片上繪製三角形和文字 */
