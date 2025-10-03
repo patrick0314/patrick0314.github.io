@@ -1,4 +1,4 @@
-import { filterScriptsByUrlParams } from './utils.js';
+import { filterScriptsByUrlParams, sortScripts } from './utils.js';
 
 document.addEventListener('DOMContentLoaded', async function() {
     // --- 1. 獲取頁面元素 ---
@@ -78,14 +78,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         // 從已被 URL 篩選過的結果開始
         let scriptsToShow = [...filteredScripts];
 
-        // 步驟 A: 執行排序
-        if (sortBy === 'date') {
-            scriptsToShow.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-        } else if (sortBy === 'rating') {
-            scriptsToShow.sort((a, b) => (b.rating.total || 0) - (a.rating.total || 0));
-        } else if (sortBy === 'players') {
-            scriptsToShow.sort((a, b) => (a.players || 0) - (b.players || 0));
-        }
+        // 步驟 A: 使用共用函數進行排序
+        scriptsToShow = sortScripts(scriptsToShow, sortBy);
 
         // 步驟 B: 執行搜尋
         if (searchTerm) {
@@ -108,7 +102,11 @@ function renderCards(scripts) {
     container.innerHTML = ''; 
 
     if (scripts.length === 0) {
-        container.innerHTML = `...`; // 無結果的 HTML
+        container.innerHTML = `
+            <div class="no-results">
+                <p>找不到符合條件的劇本。</p>
+            </div>
+        `;
         return;
     }
     

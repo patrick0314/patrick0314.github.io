@@ -1,3 +1,32 @@
+// --- 頁面載入時的執行順序 ---
+document.addEventListener('DOMContentLoaded', async function() {
+    // 1. 載入共用元件 (Header/Footer)
+    await initComponents();
+    
+    // 2. 初始化 TOC 滾動 (只在 index.html 上需要)
+    //    我們透過檢查頁面上有沒有 .toc-nav 元素來決定是否執行
+    if (document.querySelector('.toc-nav')) {
+        initializeTocScroll();
+    }
+
+    // 3. 初始化「回到頂部」按鈕功能
+    initializeBackToTop();
+});
+
+// -----------------
+// 函數定義區
+// -----------------
+
+// 初始化所有元件的函數
+async function initComponents() {
+    // 載入 header 和 footer
+    await loadComponent('header-placeholder', '_header.html');
+    await loadComponent('footer-placeholder', '_footer.html');
+
+    // 等待 header 載入完成後，再初始化下拉選單功能
+    initializeDropdowns();
+}
+
 // 異步函數來載入 HTML 元件
 async function loadComponent(elementId, filePath) {
     try {
@@ -13,16 +42,6 @@ async function loadComponent(elementId, filePath) {
     } catch (error) {
         console.error('Failed to load component:', error);
     }
-}
-
-// 初始化所有元件的函數
-async function initComponents() {
-    // 載入 header 和 footer
-    await loadComponent('header-placeholder', '_header.html');
-    await loadComponent('footer-placeholder', '_footer.html');
-
-    // 等待 header 載入完成後，再初始化下拉選單功能
-    initializeDropdowns();
 }
 
 function initializeDropdowns() {
@@ -103,18 +122,3 @@ function initializeBackToTop() {
         });
     }
 }
-
-// --- 頁面載入時的執行順序 ---
-document.addEventListener('DOMContentLoaded', async function() {
-    // 1. 載入共用元件 (Header/Footer)
-    await initComponents();
-    
-    // 2. 初始化 TOC 滾動 (只在 index.html 上需要)
-    //    我們透過檢查頁面上有沒有 .toc-nav 元素來決定是否執行
-    if (document.querySelector('.toc-nav')) {
-        initializeTocScroll();
-    }
-
-    // 3. 【新增】初始化「回到頂部」按鈕功能
-    initializeBackToTop();
-});

@@ -30,14 +30,14 @@ header nav ul {
 header nav a.nav-button {
     display: inline-block; /* Allows setting width, height, and padding. */
     min-width: 120px; /* Minimum width of button to make each button the same */
-    background-color: rgb(255, 255, 255); /* Sets the button's background to white. */
-    color: rgb(75, 125, 180); /* Sets the button's text color to dark blue. */
+    background-color: rgb(240, 240, 240); /* Sets the button's background to white. */
+    color: rgb(45, 95, 180); /* Sets the button's text color to dark blue. */
     padding: 10px 20px; /* Adds internal spacing inside the button. */
     border-radius: 25px; /* Rounds the corners to create a capsule shape. */
     text-decoration: none; /* Removes the underline from the link. */
     font-weight: bold; /* Makes the button text bold. */
     
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Adds a subtle shadow to the button. */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Adds a subtle shadow to the button. */
     transition: all 0.3s ease; /* Creates a smooth animation for hover effects. */
 }
 

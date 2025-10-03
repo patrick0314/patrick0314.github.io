@@ -1,4 +1,4 @@
-import { filterScriptsByUrlParams } from './utils.js';
+import { filterScriptsByUrlParams, sortScripts } from './utils.js';
 
 document.addEventListener('DOMContentLoaded', async function() {
     const mainContent = document.getElementById('details-main-content');
@@ -28,15 +28,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         // 步驟 B: 讀取並應用儲存的排序狀態
         const savedSort = sessionStorage.getItem('sortBy');
-        if (savedSort) {
-            if (savedSort === 'date') {
-                contextScripts.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-            } else if (savedSort === 'rating') {
-                contextScripts.sort((a, b) => (b.rating.total || 0) - (a.rating.total || 0));
-            } else if (savedSort === 'players') {
-                contextScripts.sort((a, b) => (a.players || 0) - (b.players || 0));
-            }
-        }
+        contextScripts = sortScripts(contextScripts, savedSort);
         
         // --- 3. 在「已排序和篩選的列表」中尋找上/下一個劇本 ---
         const currentIndex = contextScripts.findIndex(s => s.id === scriptId);

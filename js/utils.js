@@ -32,3 +32,27 @@ export function filterScriptsByUrlParams(scripts, params) {
         return playersMatch && dmMatch && genreMatch && doneMatch && typeMatch;
     });
 }
+
+/**
+ * 根據指定的鍵值對劇本列表進行排序
+ * @param {Array} scripts - 要被排序的劇本陣列
+ * @param {string} sortBy - 排序的鍵值 (e.g., 'date', 'rating', 'players')
+ * @returns {Array} - 排序後的劇本陣列
+ */
+export function sortScripts(scripts, sortBy) {
+    const scriptsToSort = [...scripts]; // 創建一個副本以避免修改原始陣列
+
+    if (sortBy === 'date') {
+        scriptsToSort.sort((a, b) => {
+            if (!a.date) return 1;
+            if (!b.date) return -1;
+            return b.date.localeCompare(a.date);
+        });
+    } else if (sortBy === 'rating') {
+        scriptsToSort.sort((a, b) => (b.rating.total || 0) - (a.rating.total || 0));
+    } else if (sortBy === 'players') {
+        scriptsToSort.sort((a, b) => (a.players || 0) - (b.players || 0));
+    }
+    // 如果是 'default' 或其他值，則不排序，返回原始順序的副本
+    return scriptsToSort;
+}
