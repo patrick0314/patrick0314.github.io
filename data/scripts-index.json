@@ -1,5 +1,9 @@
 [
     {
+        "id": "lost-rabbit-tail",
+        "title": "消失的兔尾巴"
+    },
+    {
         "id": "suspect-x",
         "title": "嫌疑人X沒有現身"
     },
@@ -18,5 +22,9 @@
     {
         "id": "underworld",
         "title": "黑夜傳說"
+    },
+    {
+        "id": "yandere-boy-split-diary",
+        "title": "病嬌男孩的精分日記"
     }
 ]
